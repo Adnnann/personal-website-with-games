@@ -12,13 +12,16 @@ export default function Weapons({ weapon }) {
   const classes = useStyles();
   return (
     <Grid item xs={12} md={4} lg={4} xl={3} className={classes.weapons}>
-      <Card>
-        <CardMedia
-          component={"img"}
-          src={weapon}
-          style={{ width: "320px", height: "320px" }}
-        />
-      </Card>
+      <CardMedia
+        component={"img"}
+        src={weapon}
+        style={{
+          width: "320px",
+          height: "320px",
+          margin: "0 auto",
+          marginTop: "5%",
+        }}
+      />
     </Grid>
   );
 }

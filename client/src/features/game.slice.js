@@ -9,6 +9,8 @@ const initialState = {
   newGame: false,
   message: "",
   allPlayers: [],
+  gameRequest: false,
+  gameRequestAccepted: false,
 };
 
 const gameSlice = createSlice({
@@ -39,6 +41,12 @@ const gameSlice = createSlice({
     setAllPlayers: (state, action) => {
       state.allPlayers = action.payload;
     },
+    setGameRequest: (state, action) => {
+      state.gameRequest = action.payload;
+    },
+    setGameAccepted: (state, action) => {
+      state.gameRequestAccepted = action.payload;
+    },
   },
 });
 
@@ -49,6 +57,8 @@ export const getComputerWeapon = (state) => state.game.computerWeapon;
 export const getSelectWeaponModalStatus = (state) =>
   state.game.selectWeaponModal;
 export const getNewGameStatus = (state) => state.game.newGame;
+export const getGameRequest = (state) => state.game.gameRequest;
+export const getAcceptedGameRequest = (state) => state.game.gameRequestAccepted;
 
 export const {
   setSinglePlayerGame,
@@ -59,5 +69,7 @@ export const {
   setNewGame,
   setMessage,
   setAllPlayers,
+  setGameRequest,
+  setGameAccepted,
 } = gameSlice.actions;
 export default gameSlice.reducer;

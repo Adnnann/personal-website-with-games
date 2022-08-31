@@ -1,6 +1,6 @@
 import React, { useEffect } from "react";
 import { useState } from "react";
-import { Grid, Button, Typography } from "@mui/material";
+import { Grid, Button, Typography, Dialog, DialogActions } from "@mui/material";
 import Rock from "../../assets/weapons/rock.png";
 import Paper from "../../assets/weapons/paper.png";
 import Scissors from "../../assets/weapons/scissors.png";
@@ -18,6 +18,10 @@ import {
   getNewGameStatus,
   setNewGame,
   setAllPlayers,
+  getGameRequest,
+  setGameRequest,
+  setGameAccepted,
+  getAcceptedGameRequest,
 } from "../../features/game.slice";
 import { Box } from "@mui/system";
 import SelectWeapon from "./SelectWeaponModal";
@@ -29,14 +33,26 @@ export default function GameBoard({ socket }) {
   const newGame = useSelector(getNewGameStatus);
   const allPlayers = useSelector((state) => state.game.allPlayers);
   const user = useSelector(getLogInUserStatus);
+  const gameRequest = useSelector(getGameRequest);
+  const [challenger, setChallenger] = useState(null);
+  const [challengedPlayer, setChallengedPlayer] = useState(null);
+  const gameRequestAccepted = useSelector(getAcceptedGameRequest);
 
   useEffect(() => {
     socket?.on("newPlayerAdded", (onlinePlayers) => {
-      console.log(onlinePlayers);
       dispatch(setAllPlayers(onlinePlayers));
     });
+    socket?.on("selectedPlayerGameRequest", (players) => {
+      dispatch(setGameRequest(true));
+      setChallengedPlayer(players[0]);
+      setChallenger(players[1]);
+      console.log(players);
+    });
+    socket?.on("gameRequestAccepted", (player) => {
+      dispatch(setGameAccepted(true));
+    });
   }, [socket, dispatch]);
-
+  console.log(challengedPlayer, challenger);
   const weapons = [Rock, Paper, Scissors];
 
   const singlePlayerGame = useSelector(playSinglePlayerGame);
@@ -53,6 +69,27 @@ export default function GameBoard({ socket }) {
   };
 
   const handlePlayAgainstFriend = () => {};
+
+  const selectPlayer = (event) => {
+    const players = {
+      challenger:
+        user.userData.user.firstName + " " + user.userData.user.lastName,
+      challengedPlayer: event.target.value,
+    };
+
+    socket.emit("selectPlayer", players);
+    console.log(
+      user.userData.user.firstName + " " + user.userData.user.lastName
+    );
+  };
+
+  const acceptGameRequest = () => {
+    const players = {
+      challengerId: challenger.socketId,
+      challengedPlayer: challengedPlayer.name,
+    };
+    socket.emit("acceptGameRequest", players);
+  };
 
   return (
     <Grid
@@ -75,6 +112,7 @@ export default function GameBoard({ socket }) {
       {multiPlayerGame && (
         <>
           <AvailablePlayers
+            selectPlayer={selectPlayer}
             players={allPlayers.filter(
               (player) => player.id !== user.userData.user._id
             )}
@@ -179,6 +217,18 @@ export default function GameBoard({ socket }) {
           </Box>
         )}
       </Grid>
+      <Dialog open={gameRequest}>
+        <Typography variant="p">{`Player  would like to play against you?`}</Typography>
+        <DialogActions>
+          <Button color="primary" onClick={acceptGameRequest}>
+            Accept
+          </Button>
+          <Button>Reject</Button>
+        </DialogActions>
+      </Dialog>
+      <Dialog open={gameRequestAccepted}>
+        <Typography variant="p">{`Your game request was approved`}</Typography>
+      </Dialog>
     </Grid>
   );
 }

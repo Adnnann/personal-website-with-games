@@ -9,7 +9,7 @@ const io = new Server({
   },
 });
 
-const onlinePlayers = [];
+let onlinePlayers = [];
 
 const addNewPlayer = (playerData, socketId) => {
   const player = playerData;
@@ -17,14 +17,35 @@ const addNewPlayer = (playerData, socketId) => {
 
   player["socketId"] = playerSocketId;
   onlinePlayers.push({ ...player });
-  console.log(onlinePlayers);
 };
 
 io.on("connection", (socket) => {
   socket.on("newPlayer", (player) => {
-    console.log(onlinePlayers);
     addNewPlayer(player, socket.id);
     io.sockets.emit("newPlayerAdded", onlinePlayers);
+  });
+  socket.on("selectPlayer", (players) => {
+    console.log("Players", players);
+    const challengedPlayer = onlinePlayers.filter(
+      (item) => item.name === players.challengedPlayer
+    );
+    const challenger = onlinePlayers.filter(
+      (item) => item.name === players.challenger
+    );
+
+    const opponents = [{ ...challengedPlayer[0] }, { ...challenger[0] }];
+
+    socket
+      .to(challengedPlayer[0].socketId)
+      .emit("selectedPlayerGameRequest", opponents);
+  });
+  socket.on("acceptGameRequest", (players) => {
+    socket
+      .to(players.challengerId)
+      .emit("gameRequestAccepted", players.challengedPlayer);
+  });
+  socket.on("disconnect", () => {
+    onlinePlayers = [];
   });
 });
 
