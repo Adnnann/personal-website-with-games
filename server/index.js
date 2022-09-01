@@ -10,11 +10,13 @@ const io = new Server({
 });
 
 let onlinePlayers = [];
+let games = [];
 
 const addNewPlayer = (playerData, socketId) => {
   const player = playerData;
   const playerSocketId = socketId;
 
+  player["isAvailable"] = true;
   player["socketId"] = playerSocketId;
   onlinePlayers.push({ ...player });
 };
@@ -25,7 +27,7 @@ io.on("connection", (socket) => {
     io.sockets.emit("newPlayerAdded", onlinePlayers);
   });
   socket.on("selectPlayer", (players) => {
-    console.log("Players", players);
+    games.push(`game-${games.length}`);
     const challengedPlayer = onlinePlayers.filter(
       (item) => item.name === players.challengedPlayer
     );
@@ -40,12 +42,36 @@ io.on("connection", (socket) => {
       .emit("selectedPlayerGameRequest", opponents);
   });
   socket.on("acceptGameRequest", (players) => {
-    socket
-      .to(players.challengerId)
-      .emit("gameRequestAccepted", players.challengedPlayer);
+    const availablePlayers = [];
+    onlinePlayers.forEach((item) => {
+      if (
+        item.socketId == players.challengedPlayerId ||
+        item.socketId == players.challengerId
+      ) {
+        item.isAvailable = false;
+      }
+      availablePlayers.push({ ...item });
+    });
+
+    io.emit("availablePlayers", availablePlayers);
+    socket.join(`game-${games.length}`);
+    socket.to(players.challengerId).emit("gameRequestAccepted", players);
   });
+  socket.on("player1Turn", (players) => {
+    io.to(players.challengerId).emit("player1Turn", players);
+  });
+
+  socket.on("player2Turn", (players) => {
+    io.to(players.challengedPlayerId).emit("player2Turn", players);
+  });
+
+  socket.on("endGame", (players) => {
+    io.to("game-" + games.length).emit("endGame", players);
+  });
+
   socket.on("disconnect", () => {
     onlinePlayers = [];
+    games = [];
   });
 });
 

@@ -22,13 +22,21 @@ import {
   setGameRequest,
   setGameAccepted,
   getAcceptedGameRequest,
+  setMultiPlayerSelectWeapon,
+  getPlayer1Weapon,
+  getPlayer2Weapon,
+  setPlayerTurn,
+  getPlayerTurn,
+  setPlayers,
+  setPlayer1Weapon,
+  setPlayer2Weapon,
 } from "../../features/game.slice";
 import { Box } from "@mui/system";
 import SelectWeapon from "./SelectWeaponModal";
 import AvailablePlayers from "./AvailablePlayers";
 import { getLogInUserStatus } from "../../features/users.slice";
 
-export default function GameBoard({ socket }) {
+export default function GameBoard({ socket, singlePlayer }) {
   const dispatch = useDispatch();
   const newGame = useSelector(getNewGameStatus);
   const allPlayers = useSelector((state) => state.game.allPlayers);
@@ -37,6 +45,12 @@ export default function GameBoard({ socket }) {
   const [challenger, setChallenger] = useState(null);
   const [challengedPlayer, setChallengedPlayer] = useState(null);
   const gameRequestAccepted = useSelector(getAcceptedGameRequest);
+  const player1Weapon = useSelector(getPlayer1Weapon);
+  const player2Weapon = useSelector(getPlayer2Weapon);
+
+  console.log(player1Weapon);
+
+  const playerTurn = useSelector(getPlayerTurn);
 
   useEffect(() => {
     socket?.on("newPlayerAdded", (onlinePlayers) => {
@@ -46,14 +60,31 @@ export default function GameBoard({ socket }) {
       dispatch(setGameRequest(true));
       setChallengedPlayer(players[0]);
       setChallenger(players[1]);
-      console.log(players);
     });
-    socket?.on("gameRequestAccepted", (player) => {
+    socket?.on("gameRequestAccepted", (players) => {
       dispatch(setGameAccepted(true));
+      socket.emit("player1Turn", players);
+    });
+    socket?.on("availablePlayers", (availablePlayers) => {
+      dispatch(setAllPlayers(availablePlayers));
+    });
+    socket?.on("player1Turn", (players) => {
+      dispatch(setSelectWeaponModal(true));
+      dispatch(setPlayerTurn("player1"));
+      dispatch(setPlayers(players));
+    });
+    socket?.on("player2Turn", (players) => {
+      dispatch(setPlayers(players));
+      dispatch(setPlayerTurn("player2"));
+      dispatch(setSelectWeaponModal(true));
+    });
+    socket?.on("endGame", (players) => {
+      dispatch(setPlayer1Weapon(players.player1Weapon));
+      dispatch(setPlayer2Weapon(players.player2Weapon));
     });
   }, [socket, dispatch]);
-  console.log(challengedPlayer, challenger);
-  const weapons = [Rock, Paper, Scissors];
+
+  console.log(challengedPlayer);
 
   const singlePlayerGame = useSelector(playSinglePlayerGame);
   const multiPlayerGame = useSelector(playMultiPlayerGame);
@@ -78,17 +109,19 @@ export default function GameBoard({ socket }) {
     };
 
     socket.emit("selectPlayer", players);
-    console.log(
-      user.userData.user.firstName + " " + user.userData.user.lastName
-    );
   };
 
   const acceptGameRequest = () => {
     const players = {
       challengerId: challenger.socketId,
-      challengedPlayer: challengedPlayer.name,
+      challengedPlayerId: challengedPlayer.socketId,
     };
     socket.emit("acceptGameRequest", players);
+    dispatch(setGameRequest(false));
+  };
+
+  const handleNewMultiplayerGame = () => {
+    dispatch(setSelectWeaponModal(true));
   };
 
   return (
@@ -99,24 +132,51 @@ export default function GameBoard({ socket }) {
       style={{ marginTop: "20px" }}
     >
       <GameTabs />
-      <SelectWeapon />
+      <SelectWeapon singlePlayer={singlePlayerGame} socket={socket} />
       {singlePlayerGame && (
-        <Grid item xs={12} md={12} lg={12} xl={12}>
-          <Box textAlign="center">
-            <Button variant="contained" onClick={handlePlayGame}>
-              Play Game
-            </Button>
-          </Box>
-        </Grid>
+        <>
+          <SelectWeapon singlePlayer={singlePlayerGame} socket={socket} />
+          <Grid item xs={12} md={12} lg={12} xl={12}>
+            <Box textAlign="center">
+              <Button variant="contained" onClick={handlePlayGame}>
+                Play Game
+              </Button>
+            </Box>
+          </Grid>
+          <Weapons
+            weapon={
+              singlePlayerWeapon === "paper"
+                ? Paper
+                : singlePlayerWeapon === "rock"
+                ? Rock
+                : singlePlayerWeapon === "scissors"
+                ? Scissors
+                : null
+            }
+          />
+          <Weapons
+            weapon={
+              computerWeapon === "paper"
+                ? Paper
+                : computerWeapon === "rock"
+                ? Rock
+                : computerWeapon === "scissors"
+                ? Scissors
+                : null
+            }
+          />
+        </>
       )}
       {multiPlayerGame && (
         <>
-          <AvailablePlayers
-            selectPlayer={selectPlayer}
-            players={allPlayers.filter(
-              (player) => player.id !== user.userData.user._id
-            )}
-          />
+          {user?.userData?.user ? (
+            <AvailablePlayers
+              selectPlayer={selectPlayer}
+              players={allPlayers.filter(
+                (player) => player.id !== user.userData.user._id
+              )}
+            />
+          ) : null}
           <Grid item xs={12} md={8} lg={8} xl={9}>
             <Box style={{ marginLeft: "20%" }}>
               <Button variant="contained" onClick={handlePlayAgainstFriend}>
@@ -125,35 +185,43 @@ export default function GameBoard({ socket }) {
               <Button variant="contained" style={{ marginLeft: "20px" }}>
                 Select Random Player
               </Button>
+              <Button
+                variant="contained"
+                style={{ marginLeft: "20px" }}
+                onClick={handleNewMultiplayerGame}
+              >
+                Play Again
+              </Button>
             </Box>
           </Grid>
+
+          <Weapons
+            weapon={
+              player1Weapon === "paper"
+                ? Paper
+                : player1Weapon === "rock"
+                ? Rock
+                : player1Weapon === "scissors"
+                ? Scissors
+                : null
+            }
+          />
+          <Weapons
+            weapon={
+              player2Weapon === "paper"
+                ? Paper
+                : player2Weapon === "rock"
+                ? Rock
+                : player2Weapon === "scissors"
+                ? Scissors
+                : null
+            }
+          />
         </>
       )}
 
-      <Weapons
-        weapon={
-          singlePlayerWeapon === "paper"
-            ? Paper
-            : singlePlayerWeapon === "rock"
-            ? Rock
-            : singlePlayerWeapon === "scissors"
-            ? Scissors
-            : null
-        }
-      />
-      <Weapons
-        weapon={
-          computerWeapon === "paper"
-            ? Paper
-            : computerWeapon === "rock"
-            ? Rock
-            : computerWeapon === "scissors"
-            ? Scissors
-            : null
-        }
-      />
       <Grid item xs={12} md={12} lg={12} xl={12}>
-        {newGame ? null : (
+        {singlePlayerGame ? null : (
           <Box>
             {singlePlayerWeapon === "rock" && computerWeapon === "scissors" ? (
               <Typography
@@ -205,7 +273,7 @@ export default function GameBoard({ socket }) {
               >
                 You lose - Paper covers rock
               </Typography>
-            ) : (
+            ) : singlePlayerWeapon === computerWeapon ? (
               <Typography
                 variant="h3"
                 component="h5"
@@ -213,7 +281,67 @@ export default function GameBoard({ socket }) {
               >
                 Tie!
               </Typography>
-            )}
+            ) : null}
+
+            {multiPlayerGame ? (
+              player1Weapon === "rock" && player2Weapon === "scissors" ? (
+                <Typography
+                  variant="h3"
+                  component="h5"
+                  style={{ textAlign: "center" }}
+                >
+                  Player 1 wins - Rock breaks scissors
+                </Typography>
+              ) : player1Weapon === "scissors" && player2Weapon === "rock" ? (
+                <Typography
+                  variant="h3"
+                  component="h5"
+                  style={{ textAlign: "center" }}
+                >
+                  Player 2 wins - Rock breaks scissors
+                </Typography>
+              ) : player1Weapon === "paper" && player2Weapon === "rock" ? (
+                <Typography
+                  variant="h3"
+                  component="h5"
+                  style={{ textAlign: "center" }}
+                >
+                  Player 1 wins - Scissors cut paper
+                </Typography>
+              ) : player1Weapon === "paper" && player2Weapon === "scissors" ? (
+                <Typography
+                  variant="h3"
+                  component="h5"
+                  style={{ textAlign: "center" }}
+                >
+                  Player 2 wins - Scissors cut paper
+                </Typography>
+              ) : player1Weapon === "paper" && player2Weapon === "rock" ? (
+                <Typography
+                  variant="h3"
+                  component="h5"
+                  style={{ textAlign: "center" }}
+                >
+                  Player 1 wins - Paper covers rock
+                </Typography>
+              ) : player1Weapon === "rock" && player2Weapon === "paper" ? (
+                <Typography
+                  variant="h3"
+                  component="h5"
+                  style={{ textAlign: "center" }}
+                >
+                  Player 2 wins - Paper covers rock
+                </Typography>
+              ) : player1Weapon === player2Weapon ? (
+                <Typography
+                  variant="h3"
+                  component="h5"
+                  style={{ textAlign: "center" }}
+                >
+                  Tie!
+                </Typography>
+              ) : null
+            ) : null}
           </Box>
         )}
       </Grid>
@@ -225,9 +353,6 @@ export default function GameBoard({ socket }) {
           </Button>
           <Button>Reject</Button>
         </DialogActions>
-      </Dialog>
-      <Dialog open={gameRequestAccepted}>
-        <Typography variant="p">{`Your game request was approved`}</Typography>
       </Dialog>
     </Grid>
   );

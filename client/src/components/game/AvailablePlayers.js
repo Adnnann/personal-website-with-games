@@ -7,7 +7,11 @@ export default function AvailablePlayers({ players, selectPlayer }) {
       <Box>
         {players.map((player, index) => (
           <span key={player.name} style={{ display: "flex" }}>
-            <Checkbox onClick={selectPlayer} value={player.name} />
+            <Checkbox
+              onClick={selectPlayer}
+              value={player.name}
+              disabled={!player.isAvailable}
+            />
 
             <p>{player.name}</p>
           </span>

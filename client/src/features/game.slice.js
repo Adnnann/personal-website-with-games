@@ -3,14 +3,18 @@ import { createSlice } from "@reduxjs/toolkit";
 const initialState = {
   singlePlayer: true,
   multiPlayer: false,
-  weapon: null,
-  computerWeapon: null,
+  weapon: "singlePlayerWeapon",
+  computerWeapon: "computerWeapon",
   selectWeaponModal: false,
   newGame: false,
   message: "",
   allPlayers: [],
   gameRequest: false,
   gameRequestAccepted: false,
+  player1Weapon: "player1Weapon",
+  player2Weapon: "player2Weapon",
+  playerTurn: null,
+  players: {},
 };
 
 const gameSlice = createSlice({
@@ -47,6 +51,22 @@ const gameSlice = createSlice({
     setGameAccepted: (state, action) => {
       state.gameRequestAccepted = action.payload;
     },
+    setPlayer1Weapon: (state, action) => {
+      state.player1Weapon = action.payload;
+    },
+    setPlayer2Weapon: (state, action) => {
+      state.player2Weapon = action.payload;
+    },
+    setNewMultiPlayerGame: (state, action) => {
+      state.newMultiPlayerGame = action.payload;
+    },
+    setPlayerTurn: (state, action) => {
+      state.playerTurn = action.payload;
+    },
+    setPlayers: (state, action) => {
+      state.players = action.payload;
+    },
+    resetStore: () => initialState,
   },
 });
 
@@ -59,6 +79,10 @@ export const getSelectWeaponModalStatus = (state) =>
 export const getNewGameStatus = (state) => state.game.newGame;
 export const getGameRequest = (state) => state.game.gameRequest;
 export const getAcceptedGameRequest = (state) => state.game.gameRequestAccepted;
+export const getPlayer1Weapon = (state) => state.game.player1Weapon;
+export const getPlayer2Weapon = (state) => state.game.player2Weapon;
+export const getPlayerTurn = (state) => state.game.playerTurn;
+export const getPlayers = (state) => state.game.players;
 
 export const {
   setSinglePlayerGame,
@@ -71,5 +95,10 @@ export const {
   setAllPlayers,
   setGameRequest,
   setGameAccepted,
+  setPlayer1Weapon,
+  setPlayer2Weapon,
+  setPlayerTurn,
+  setPlayers,
+  resetStore,
 } = gameSlice.actions;
 export default gameSlice.reducer;

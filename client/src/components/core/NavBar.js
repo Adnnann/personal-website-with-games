@@ -18,7 +18,7 @@ import {
   setSignUpFormStatus,
   setUserLoginFormStatus,
 } from "../../features/users.slice";
-import { setNewGame } from "../../features/game.slice";
+import { resetStore, setNewGame } from "../../features/game.slice";
 
 const loggedUserButtons = ["Users", "My Profile", "Game", "Logout"];
 const notLoggedUserButtons = ["Login", "Register"];
@@ -34,7 +34,6 @@ const NavBar = ({ socket }) => {
         navigate("/");
       }
     };
-    console.log(socket);
   }, [user]);
 
   const redirectToUsers = () => {
@@ -53,7 +52,6 @@ const NavBar = ({ socket }) => {
     };
 
     socket?.emit("newPlayer", player);
-    console.log(socket);
     navigate("/game");
   };
 
@@ -69,6 +67,8 @@ const NavBar = ({ socket }) => {
   const logOut = () => {
     dispatch(logOutUser());
     window.localStorage.removeItem("user");
+    dispatch(resetStore());
+    navigate("/");
   };
 
   const handleClickForLoggedUser = [
