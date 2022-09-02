@@ -1,10 +1,9 @@
-import React, { useEffect } from "react";
-import { useState } from "react";
-import { Grid, Button, Typography, Dialog, DialogActions } from "@mui/material";
-
+import React, { useEffect, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { Grid } from "@mui/material";
 import Weapons from "../game/Weapons";
 import GameTabs from "../game/GameTabs";
-import { useDispatch, useSelector } from "react-redux";
+import { getLogInUserStatus } from "../../features/users.slice";
 import {
   playSinglePlayerGame,
   playMultiPlayerGame,
@@ -25,7 +24,6 @@ import {
 } from "../../features/game.slice";
 import SelectWeapon from "./SelectWeaponModal";
 import AvailablePlayers from "./AvailablePlayers";
-import { getLogInUserStatus } from "../../features/users.slice";
 import PlaySinglePlayerGameButton from "./PlaySinglePlayerButton";
 import MultiPlayerGameButtons from "./MultiPlayerGameButtons";
 import GameRequestModal from "./GameRequestModal";
