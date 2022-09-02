@@ -1,19 +1,14 @@
-import * as React from "react";
-import Box from "@mui/material/Box";
-import Tabs from "@mui/material/Tabs";
-import Tab from "@mui/material/Tab";
-import { useDispatch, useSelector } from "react-redux";
+import React, { useState } from "react";
+import { useDispatch } from "react-redux";
 import {
-  playMultiPlayerGame,
-  playSinglePlayerGame,
   setMultiPlayerGame,
   setSinglePlayerGame,
 } from "../../features/game.slice";
+import { Box, Tabs, Tab } from "@mui/material";
 
 export default function GameTabs() {
   const dispatch = useDispatch();
-
-  const [value, setValue] = React.useState(0);
+  const [value, setValue] = useState(0);
 
   const handleChange = (event, newValue) => {
     setValue(newValue);

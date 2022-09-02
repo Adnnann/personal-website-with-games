@@ -41,6 +41,11 @@ io.on("connection", (socket) => {
       .to(challengedPlayer[0].socketId)
       .emit("selectedPlayerGameRequest", opponents);
   });
+
+  socket.on("rejectGameRequest", (players) => {
+    console.log(players);
+    io.to(players.challengerId).emit("gameRequestRejected", players);
+  });
   socket.on("acceptGameRequest", (players) => {
     const availablePlayers = [];
     onlinePlayers.forEach((item) => {
@@ -58,6 +63,7 @@ io.on("connection", (socket) => {
     socket.to(players.challengerId).emit("gameRequestAccepted", players);
   });
   socket.on("player1Turn", (players) => {
+    console.log(players);
     io.to(players.challengerId).emit("player1Turn", players);
   });
 
@@ -67,6 +73,18 @@ io.on("connection", (socket) => {
 
   socket.on("endGame", (players) => {
     io.to("game-" + games.length).emit("endGame", players);
+  });
+
+  socket.on("userLeft", (players) => {
+    onlinePlayers.forEach((item) => {
+      if (
+        item.socketId == players.challengedPlayerId ||
+        item.socketId == players.challengerId
+      ) {
+        item.isAvailable = true;
+      }
+      availablePlayers.push({ ...item });
+    });
   });
 
   socket.on("disconnect", () => {

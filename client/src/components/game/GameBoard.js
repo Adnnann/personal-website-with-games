@@ -21,6 +21,11 @@ import {
   getSinglePlayerWeapons,
   getMultiPlayerWeapons,
   setMultiPlayerWeapons,
+  setPlayAgainAgainstFriend,
+  setRejectGameRequest,
+  getRejectGameRequestStatus,
+  getMultiplayerGameType,
+  setMultiPlayerGameType,
 } from "../../features/game.slice";
 import SelectWeapon from "./SelectWeaponModal";
 import AvailablePlayers from "./AvailablePlayers";
@@ -30,6 +35,7 @@ import GameRequestModal from "./GameRequestModal";
 import SinglePlayerWinnerMessage from "./SinglePlayerWinnerMessage";
 import MultiPlayerWinnerMessage from "./MultiPlayerWinnerMessage";
 import { makeStyles } from "@mui/styles";
+import RejectGameRequestModal from "./GameRejectRequestModal";
 
 const useStyles = makeStyles({
   gameBoardContainer: {
@@ -37,7 +43,7 @@ const useStyles = makeStyles({
   },
 });
 
-export default function GameBoard({ socket, singlePlayer, selectedWeapons }) {
+export default function GameBoard({ socket }) {
   const dispatch = useDispatch();
   const classes = useStyles();
   const allPlayers = useSelector((state) => state.game.allPlayers);
@@ -47,11 +53,14 @@ export default function GameBoard({ socket, singlePlayer, selectedWeapons }) {
   const [challengedPlayer, setChallengedPlayer] = useState(null);
 
   const singlePlayerWinnerMessage = useSelector(getSinglePlayerWinnerMessage);
-  const multiPlayerWinnerMessage = useSelector(getMultiPlayerWinnerMessage);
+  const multiPlayerMessage = useSelector(getMultiPlayerWinnerMessage);
 
   const singlePlayerWeapons = useSelector(getSinglePlayerWeapons);
   const multiPlayerWeapons = useSelector(getMultiPlayerWeapons);
 
+  const rejectGameRequestStatus = useSelector(getRejectGameRequestStatus);
+
+  const multiplayerGameType = useSelector(getMultiplayerGameType);
   useEffect(() => {
     socket?.on("newPlayerAdded", (onlinePlayers) => {
       dispatch(setAllPlayers(onlinePlayers));
@@ -64,6 +73,10 @@ export default function GameBoard({ socket, singlePlayer, selectedWeapons }) {
     socket?.on("gameRequestAccepted", (players) => {
       dispatch(setGameAccepted(true));
       socket.emit("player1Turn", players);
+    });
+    socket?.on("gameRequestRejected", (players) => {
+      dispatch(setGameAccepted(false));
+      dispatch(setRejectGameRequest(true));
     });
     socket?.on("availablePlayers", (availablePlayers) => {
       dispatch(setAllPlayers(availablePlayers));
@@ -87,6 +100,7 @@ export default function GameBoard({ socket, singlePlayer, selectedWeapons }) {
         setMultiPlayerWeapons([players.player1Weapon, players.player2Weapon])
       );
       dispatch(setMessageForMultiplayer(weapons));
+      dispatch(setPlayAgainAgainstFriend(true));
     });
   }, [socket, dispatch]);
 
@@ -98,7 +112,14 @@ export default function GameBoard({ socket, singlePlayer, selectedWeapons }) {
     dispatch(setNewGame(true));
   };
 
-  const handlePlayAgainstFriend = () => {};
+  const handlePlayAgainstFriend = () => {
+    const multiplayerGame = {
+      againstFriend: true,
+      againstRandomPlayer: false,
+    };
+
+    dispatch(setMultiPlayerGameType(multiplayerGame));
+  };
 
   const selectPlayer = (event) => {
     const players = {
@@ -115,6 +136,15 @@ export default function GameBoard({ socket, singlePlayer, selectedWeapons }) {
       challengedPlayerId: challengedPlayer.socketId,
     };
     socket.emit("acceptGameRequest", players);
+    dispatch(setGameRequest(false));
+  };
+
+  const rejectGameRequest = () => {
+    const players = {
+      challengerId: challenger.socketId,
+      challengedPlayerId: challengedPlayer.socketId,
+    };
+    socket.emit("rejectGameRequest", players);
     dispatch(setGameRequest(false));
   };
 
@@ -136,18 +166,20 @@ export default function GameBoard({ socket, singlePlayer, selectedWeapons }) {
       )}
       {multiPlayerGame && (
         <>
-          {user?.userData?.user ? (
-            <AvailablePlayers
-              selectPlayer={selectPlayer}
-              players={allPlayers.filter(
-                (player) => player.id !== user.userData.user._id
-              )}
-            />
-          ) : null}
+          <Grid item xs={12} md={4} lg={4} xl={3}>
+            {user?.userData?.user && multiplayerGameType.againstFriend ? (
+              <AvailablePlayers
+                selectPlayer={selectPlayer}
+                players={allPlayers.filter(
+                  (player) => player.id !== user.userData.user._id
+                )}
+              />
+            ) : null}
+          </Grid>
           <MultiPlayerGameButtons
             handlePlayAgainstFriend={handlePlayAgainstFriend}
           />
-          <Weapons selectedWeapons={multiPlayerWeapons} />
+          <Weapons socket={socket} selectedWeapons={multiPlayerWeapons} />
         </>
       )}
 
@@ -158,13 +190,17 @@ export default function GameBoard({ socket, singlePlayer, selectedWeapons }) {
           />
         )}
         {multiPlayerGame && (
-          <MultiPlayerWinnerMessage winnerMessage={multiPlayerWinnerMessage} />
+          <MultiPlayerWinnerMessage
+            multiPlayerWinnerMessage={multiPlayerMessage}
+          />
         )}
       </Grid>
       <GameRequestModal
         gameRequest={gameRequest}
         acceptGameRequest={acceptGameRequest}
+        rejectGameRequest={rejectGameRequest}
       />
+      <RejectGameRequestModal gameRequest={rejectGameRequestStatus} />
     </Grid>
   );
 }

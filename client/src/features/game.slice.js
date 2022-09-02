@@ -7,6 +7,7 @@ const initialState = {
   multiPlayerSelectedWeapons: [],
   selectWeaponModal: false,
   newGame: false,
+  playAgainAgainstFriend: false,
   singlePlayerWinnerMessage: "",
   multiPlayerWinnerMessage: "",
   allPlayers: [],
@@ -14,6 +15,8 @@ const initialState = {
   gameRequestAccepted: false,
   playerTurn: null,
   players: {},
+  rejectGameRequest: false,
+  multiplayerGameType: {},
 };
 
 const gameSlice = createSlice({
@@ -38,7 +41,11 @@ const gameSlice = createSlice({
     setNewGame: (state, action) => {
       state.newGame = action.payload;
     },
+    setMultiPlayerGameType: (state, action) => {
+      state.multiplayerGameType = action.payload;
+    },
     setMessageForMultiplayer: (state, action) => {
+      console.log(action.payload);
       state.multiPlayerWinnerMessage =
         action.payload.player1Weapon === "rock" &&
         action.payload.player2Weapon === "scissors"
@@ -106,6 +113,12 @@ const gameSlice = createSlice({
     setPlayers: (state, action) => {
       state.players = action.payload;
     },
+    setPlayAgainAgainstFriend: (state, action) => {
+      state.playAgainAgainstFriend = action.payload;
+    },
+    setRejectGameRequest: (state, action) => {
+      state.rejectGameRequest = action.payload;
+    },
     resetStore: () => initialState,
   },
 });
@@ -127,6 +140,12 @@ export const getSinglePlayerWinnerMessage = (state) =>
   state.game.singlePlayerWinnerMessage;
 export const getMultiPlayerWinnerMessage = (state) =>
   state.game.multiPlayerWinnerMessage;
+export const getAllPlayers = (state) => state.game.allPlayers;
+export const getPlayAgainAgainstFriendStatus = (state) =>
+  state.game.playAgainAgainstFriend;
+export const getRejectGameRequestStatus = (state) =>
+  state.game.rejectGameRequest;
+export const getMultiplayerGameType = (state) => state.game.multiplayerGameType;
 
 export const {
   setSinglePlayerGame,
@@ -144,6 +163,9 @@ export const {
   setPlayer2Weapon,
   setPlayerTurn,
   setPlayers,
+  setPlayAgainAgainstFriend,
   resetStore,
+  setRejectGameRequest,
+  setMultiPlayerGameType,
 } = gameSlice.actions;
 export default gameSlice.reducer;

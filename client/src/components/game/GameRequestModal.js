@@ -6,7 +6,11 @@ import {
   Typography,
 } from "@mui/material";
 
-export default function GameRequestModal({ gameRequest, acceptGameRequest }) {
+export default function GameRequestModal({
+  gameRequest,
+  acceptGameRequest,
+  rejectGameRequest,
+}) {
   return (
     <Dialog open={gameRequest}>
       <DialogTitle>
@@ -16,7 +20,7 @@ export default function GameRequestModal({ gameRequest, acceptGameRequest }) {
         <Button color="primary" onClick={acceptGameRequest}>
           Accept
         </Button>
-        <Button>Reject</Button>
+        <Button onClick={rejectGameRequest}>Reject</Button>
       </DialogActions>
     </Dialog>
   );
