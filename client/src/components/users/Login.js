@@ -11,7 +11,6 @@ import {
 import { makeStyles } from "@mui/styles";
 import { useDispatch, useSelector } from "react-redux";
 import {
-  getLoggedInUserData,
   getLoginUserFormStatus,
   getLogInUserStatus,
   logInUser,

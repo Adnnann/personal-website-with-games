@@ -19,6 +19,7 @@ import {
   signUpFormStatus,
   signUpUser,
 } from "../../features/users.slice";
+import CloseSharpIcon from "@mui/icons-material/CloseSharp";
 
 const useStyles = makeStyles({
   textFields: {
@@ -43,6 +44,11 @@ const useStyles = makeStyles({
     textAlign: "center",
     marginBottom: "30px !important",
     marginTop: "20px !important",
+  },
+  closeForm: {
+    marginLeft: "auto",
+    color: "red",
+    cursor: "pointer",
   },
 });
 
@@ -92,9 +98,15 @@ export default function SignupForm() {
     dispatch(signUpUser(userData));
   };
 
+  const cancel = () => {
+    setUserData({ firstName: "", lastName: "", email: "", password: "" });
+    dispatch(setSignUpFormStatus(false));
+  };
+
   return (
     <div>
       <Dialog open={signUpFormStatus}>
+        <CloseSharpIcon className={classes.closeForm} onClick={cancel} />
         <Typography variant="h4" className={classes.title}>
           Sign Up
         </Typography>

@@ -1,23 +1,19 @@
 import * as React from "react";
 import Dialog from "@mui/material/Dialog";
-import { Card, CardMedia, Grid, Typography } from "@mui/material";
+import { Button, Card, CardMedia, Grid, Typography } from "@mui/material";
 import Rock from "../../assets/weapons/rock.png";
 import Paper from "../../assets/weapons/paper.png";
 import Scissors from "../../assets/weapons/scissors.png";
 import { useDispatch, useSelector } from "react-redux";
 import {
-  getPlayer1Weapon,
-  getPlayer2Weapon,
   getPlayers,
   getPlayerTurn,
   getSelectWeaponModalStatus,
-  setComputerWeapon,
-  setMultiPlayerSelectWeapon,
+  playMultiPlayerGame,
   setNewGame,
-  setPlayer1Weapon,
-  setPlayer2Weapon,
   setSelectWeaponModal,
-  setSinglePlayerWeapon,
+  setSinglePlayerWeapons,
+  setSinglePlayerWinnerMessage,
 } from "../../features/game.slice";
 
 export default function SelectWeapon({ singlePlayer, socket }) {
@@ -25,15 +21,23 @@ export default function SelectWeapon({ singlePlayer, socket }) {
   const selectWeaponModalStatus = useSelector(getSelectWeaponModalStatus);
   const weapons = [Rock, Paper, Scissors];
   const selectWeapon = ["rock", "paper", "scissors"];
-
   const bothPlayers = useSelector(getPlayers);
-
   const playerTurn = useSelector(getPlayerTurn);
 
   const handleSinglePlayerWeaponSelection = (index) => {
+    const selectedWeapons = {
+      singlePlayerWeapon: selectWeapon[index],
+      computerWeapon: selectWeapon[Math.floor(Math.random() * weapons.length)],
+    };
+
     dispatch(setNewGame(false));
-    dispatch(setSinglePlayerWeapon(selectWeapon[index]));
-    dispatch(setComputerWeapon(selectWeapon[Math.floor(Math.random() * 3)]));
+    dispatch(
+      setSinglePlayerWeapons([
+        selectedWeapons.singlePlayerWeapon,
+        selectedWeapons.computerWeapon,
+      ])
+    );
+    dispatch(setSinglePlayerWinnerMessage(selectedWeapons));
     dispatch(setSelectWeaponModal(false));
   };
 
@@ -48,8 +52,6 @@ export default function SelectWeapon({ singlePlayer, socket }) {
           : bothPlayers.player1Weapon,
       player2Weapon: playerTurn === "player2" ? selectWeapon[index] : "",
     };
-
-    console.log(players);
 
     playerTurn === "player1"
       ? socket?.emit("player2Turn", players)

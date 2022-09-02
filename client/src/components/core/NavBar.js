@@ -29,11 +29,9 @@ const NavBar = ({ socket }) => {
   const user = useSelector(getLogInUserStatus);
 
   useEffect(() => {
-    return () => {
-      if (!user.isLogged && user.logInStatus === "") {
-        navigate("/");
-      }
-    };
+    if (!user.isLogged && user.logInStatus === "") {
+      navigate("/");
+    }
   }, [user]);
 
   const redirectToUsers = () => {
