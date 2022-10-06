@@ -21,7 +21,7 @@ import {
 import { resetStore, setNewGame } from "../../features/game.slice";
 
 const loggedUserButtons = ["Users", "My Profile", "Game", "Logout"];
-const notLoggedUserButtons = ["Login", "Register"];
+const notLoggedUserButtons = ["Login", "Register", "My projects"];
 
 const NavBar = ({ socket }) => {
   const navigate = useNavigate();
@@ -38,7 +38,9 @@ const NavBar = ({ socket }) => {
     console.log("users");
   };
 
-  const redirectToMyProfile = () => {};
+  const redirectToMyProfile = () => {
+    navigate("/profile");
+  };
 
   const redirectToGame = () => {
     dispatch(setNewGame(true));
@@ -69,6 +71,10 @@ const NavBar = ({ socket }) => {
     navigate("/");
   };
 
+  const redirectToMyProjects = () => {
+    navigate("/projects");
+  };
+
   const handleClickForLoggedUser = [
     redirectToUsers,
     redirectToMyProfile,
@@ -76,10 +82,14 @@ const NavBar = ({ socket }) => {
     logOut,
   ];
 
-  const handleClickForUnregisteredUser = [redirectToLogin, redirectToSignUp];
+  const handleClickForUnregisteredUser = [
+    redirectToLogin,
+    redirectToSignUp,
+    redirectToMyProjects,
+  ];
 
   return (
-    <AppBar position="static">
+    <AppBar position="fixed">
       <Container maxWidth="xl">
         <Toolbar disableGutters>
           <AdbIcon sx={{ display: { xs: "none", md: "flex" }, mr: 1 }} />

@@ -59,11 +59,11 @@ const gameSlice = createSlice({
           : action.payload.player1Weapon === "rock" &&
             action.payload.player2Weapon === "paper"
           ? "Player 2 wins - Paper covers rock"
-          : action.payload.player1Weapon === "paper" &&
-            action.payload.player2Weapon === "scissors"
-          ? "Player 1 wins - Scissors cut paper"
           : action.payload.player1Weapon === "scissors" &&
             action.payload.player2Weapon === "paper"
+          ? "Player 1 wins - Scissors cut paper"
+          : action.payload.player1Weapon === "paper" &&
+            action.payload.player2Weapon === "scissors"
           ? "Player 2 wins - Scissors cut paper"
           : action.payload.action.payload.player1Weapon ===
             action.payload.player2Weapon
@@ -71,7 +71,6 @@ const gameSlice = createSlice({
           : null;
     },
     setSinglePlayerWinnerMessage: (state, action) => {
-      console.log(action.payload);
       state.singlePlayerWinnerMessage =
         action.payload.singlePlayerWeapon === "rock" &&
         action.payload.computerWeapon === "scissors"

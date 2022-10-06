@@ -4,9 +4,8 @@ import NavBar from "./components/core/NavBar";
 import LoginForm from "./components/users/Login";
 import SignupForm from "./components/users/Signup";
 import Home from "./components/core/Home";
-import { getLogInUserStatus } from "./features/users.slice";
-import { useSelector } from "react-redux";
-import { useEffect } from "react";
+import UserProfile from "./components/users/UserProfile";
+import MyProjects from "./components/projects/MyProjects";
 
 export default function MainRouter({ socket }) {
   return (
@@ -16,8 +15,9 @@ export default function MainRouter({ socket }) {
       <SignupForm />
       <Routes>
         <Route path="/" element={<Home />}></Route>
-
         <Route path="/game" element={<GameBoard socket={socket} />}></Route>
+        <Route path="/profile" element={<UserProfile />}></Route>
+        <Route path="/projects" element={<MyProjects />}></Route>
       </Routes>
     </Router>
   );

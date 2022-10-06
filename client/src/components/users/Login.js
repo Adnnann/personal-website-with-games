@@ -132,13 +132,6 @@ export default function LoginForm() {
           >
             Log In
           </Button>
-          <Button
-            variant="contained"
-            className={classes.logInButton}
-            onClick={handleSubmit}
-          >
-            Cancel
-          </Button>
         </DialogActions>
         <Typography
           component={"p"}
