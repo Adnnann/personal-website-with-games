@@ -55,7 +55,6 @@ export default function Project({
             <Typography variant="h3">{name}</Typography>
           </a>
         </CardActions>
-<<<<<<< HEAD
 
         <CardContent style={{ textAlign: "center" }}>
           <Typography variant="caption">
@@ -66,11 +65,6 @@ export default function Project({
         </CardContent>
         <CardContent style={{ textAlign: "right" }}>
           <Typography variant="caption" style={{ textAlign: "right" }}>
-=======
-        <div>
-          <Typography variant="h6" style={{marginLeft:'5px'}}>{description}</Typography>
-          <Typography variant="caption" style={{marginLeft:'5px'}}>
->>>>>>> 0967332fc525bc93880ebd8b8956684b91bf7db9
             Created at: {moment(date).format("LLL")}
           </Typography>
         </CardContent>
