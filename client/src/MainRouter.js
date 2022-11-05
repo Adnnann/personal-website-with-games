@@ -6,6 +6,8 @@ import SignupForm from "./components/users/Signup";
 import Home from "./components/core/Home";
 import UserProfile from "./components/users/UserProfile";
 import MyProjects from "./components/projects/MyProjects";
+import { Container } from "@mui/system";
+import { Grid } from "@mui/material";
 
 export default function MainRouter({ socket }) {
   return (
@@ -14,10 +16,12 @@ export default function MainRouter({ socket }) {
       <LoginForm />
       <SignupForm />
       <Routes>
+   
         <Route path="/" element={<Home />}></Route>
         <Route path="/game" element={<GameBoard socket={socket} />}></Route>
         <Route path="/profile" element={<UserProfile />}></Route>
         <Route path="/projects" element={<MyProjects />}></Route>
+    
       </Routes>
     </Router>
   );

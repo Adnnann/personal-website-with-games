@@ -1,5 +1,4 @@
 import {
-  Button,
   Card,
   CardActions,
   CardContent,
@@ -49,8 +48,8 @@ export default function Project({
           </div>
         </CardActions>
         <div>
-          <Typography variant="h6">{description}</Typography>
-          <Typography variant="caption">
+          <Typography variant="h6" style={{marginLeft:'5px'}}>{description}</Typography>
+          <Typography variant="caption" style={{marginLeft:'5px'}}>
             Created at: {moment(date).format("LLL")}
           </Typography>
           <br />

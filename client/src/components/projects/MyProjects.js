@@ -1,10 +1,23 @@
-import { Grid } from "@mui/material";
-import Project from "./Project";
 import { useEffect, useState } from "react";
-import image from "../../assets/projects/e-learning-website.jpeg";
+import { Grid, CircularProgress } from "@mui/material";
+import { makeStyles } from "@mui/styles";
+import Project from "./Project";
+
+
+const useStyles = makeStyles({
+  container:{
+    width:"80% !important", 
+    margin:"0 auto !important",
+    marginTop:"120px !important"
+  }
+})
+
 export default function MyProjects() {
+
+  const classes = useStyles()
+
   const [githubData, setGithubData] = useState([]);
-  const [githubUser, setGithubUser] = useState("Adnnann");
+  const [githubUser, setGitHubUser] = useState("Adnnann");
   useEffect(() => {
     fetchData();
   }, []);
@@ -14,13 +27,20 @@ export default function MyProjects() {
       .then((response) => response.json())
       .then((data) => setGithubData(data));
   };
-  console.log(githubData);
+ 
   return (
-    <Grid container justifyContent={"space-evenly"} spacing={6} marginTop={5}>
-      {githubData.map((project, index) => (
+    <Grid container  spacing={2} marginTop={5} className={classes.container} >
+      {
+      
+      githubData.length > 0 ?
+      githubData
+      .filter(project=>!project.name.includes("assignment"))
+      .map((project, index) => (
         <Project
           key={index}
-          image={`https://i.ibb.co/b3DZ6mc/${project.name}.jpg`}
+          image={project.name.includes('.') 
+          ? 
+          `https://i.ibb.co/b3DZ6mc/${project.name.split('.')[0]}.jpg`}
           name={
             project.name.includes("_")
               ? project.name.replace(/_/g, " ").charAt(0).toUpperCase() +
@@ -33,7 +53,17 @@ export default function MyProjects() {
           linkToRepo={project.html_url}
           topics={project.topics}
         />
-      ))}
+      ))
+      : <div style={{margin:"0 auto"}}>
+          <span>
+          <CircularProgress size={60}/>
+          <br />
+          <br />
+          Loading..
+            </span>
+        </div>
+        }
+
     </Grid>
   );
 }

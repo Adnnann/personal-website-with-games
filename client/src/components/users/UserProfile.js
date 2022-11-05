@@ -11,9 +11,11 @@ import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
 export default function UserProfile() {
   return (
-    <Grid container justifyContent={"center"} spacing={3}>
+    <Grid container justifyContent={"center"} spacing={3} style={{marginTop:'200px'}} 
+   
+>
       <Grid item xs={12} md={4} lg={4} xl={3}>
-        <Card style={{ marginTop: "50px", borderRadius: "50px" }}>
+        <Card style={{  borderRadius: "50px" }}>
           <CardActions>
             <span style={{ width: "100%" }}>
               <DeleteIcon
