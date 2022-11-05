@@ -1,13 +1,35 @@
-import { Card, CardMedia, Typography } from "@mui/material";
+import { Card, CardMedia, Grid, Typography } from "@mui/material";
+import { makeStyles } from "@mui/styles";
 import React from "react";
 import HomePageImg from "../../assets/images/homePage.jpeg";
+
+const useStyles = makeStyles({
+  container: {
+    paddingTop: "150px",
+  },
+  title: {
+    marginBottom: "30px !important",
+    textAlign: "center",
+  },
+});
+
 export default function Home() {
+  const classes = useStyles();
   return (
-    <Card style={{ width: "40%", margin: "0 auto", marginTop: "80px" }}>
-      <Typography variant="h3" style={{ textAlign: "center" }}>
-        Welcome to my page
-      </Typography>
-      <CardMedia component={"img"} src={HomePageImg} />
-    </Card>
+    <Grid
+      container
+      justifyContent={"center"}
+      spacing={3}
+      className={classes.container}
+    >
+      <Grid item xs={12} md={8} lg={8} xl={6}>
+        <Card>
+          <Typography variant="h3" className={classes.title}>
+            Welcome to my page
+          </Typography>
+          <CardMedia component={"img"} src={HomePageImg} />
+        </Card>
+      </Grid>
+    </Grid>
   );
 }

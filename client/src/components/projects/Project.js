@@ -1,3 +1,4 @@
+import { ClassNames } from "@emotion/react";
 import {
   Button,
   Card,
@@ -7,7 +8,23 @@ import {
   Grid,
   Typography,
 } from "@mui/material";
+import { makeStyles } from "@mui/styles";
 import moment from "moment";
+
+const useStyles = makeStyles({
+  title: {
+    textDecoration: "none",
+    fontSize: "24px",
+    color: "black",
+    cursor: "pointer",
+    margin: "0 auto",
+  },
+  image: {
+    height: "60%",
+    width: "60%",
+    margin: "0 auto",
+  },
+});
 
 export default function Project({
   image,
@@ -17,51 +34,41 @@ export default function Project({
   linkToRepo,
   topics,
 }) {
+  const classes = useStyles();
   return (
     <Grid item xs={12} md={6} lg={6} xl={4}>
       <Card
         style={{
-          height: "680px",
-          display: "flex",
-          flexDirection: "column",
+          height: "480px",
         }}
       >
         <a href={linkToRepo} target="_blank" rel="noreferrer">
-          <CardMedia component="img" src={image} />
+          <CardMedia component="img" src={image} className={classes.image} />
         </a>
 
-        <CardActions style={{ textAlign: "center" }}>
-          <div style={{ width: "100%" }}>
-            <a
-              href={linkToRepo}
-              target={"_blank"}
-              style={{
-                textDecoration: "none",
-                fontSize: "24px",
-                color: "black",
-                cursor: "pointer",
-              }}
-            >
-              <Typography variant="h3" style={{ height: "120px" }}>
-                {name}
-              </Typography>
-            </a>
-          </div>
+        <CardActions>
+          <a
+            href={linkToRepo}
+            rel="noreferrer"
+            target={"_blank"}
+            className={classes.title}
+          >
+            <Typography variant="h3">{name}</Typography>
+          </a>
         </CardActions>
-        <div>
-          <Typography variant="h6">{description}</Typography>
+
+        <CardContent style={{ textAlign: "center" }}>
           <Typography variant="caption">
+            {topics.map((topic, index) => {
+              return topic + " | ";
+            })}
+          </Typography>
+        </CardContent>
+        <CardContent style={{ textAlign: "right" }}>
+          <Typography variant="caption" style={{ textAlign: "right" }}>
             Created at: {moment(date).format("LLL")}
           </Typography>
-          <br />
-          <CardContent style={{ textAlign: "center" }}>
-            <Typography variant="caption">
-              {topics.map((topic, index) => {
-                return topic + " | ";
-              })}
-            </Typography>
-          </CardContent>
-        </div>
+        </CardContent>
       </Card>
     </Grid>
   );

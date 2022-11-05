@@ -29,11 +29,12 @@ const useStyles = makeStyles({
     marginBottom: "5px !important",
   },
   logInButton: {
-    width: "160px",
+    width: "220px",
     height: "60px",
     margin: "0 auto !important",
     textTransform: "none !important",
     fontSize: "20px !important",
+    marginTop: "20px !important",
   },
   title: {
     textAlign: "center",

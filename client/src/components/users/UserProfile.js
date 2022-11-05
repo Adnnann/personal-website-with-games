@@ -1,30 +1,52 @@
-import {
-  Card,
-  CardActions,
-  CardHeader,
-  CardMedia,
-  Grid,
-  Typography,
-} from "@mui/material";
+import { Card, CardActions, CardMedia, Grid, Typography } from "@mui/material";
+import { makeStyles } from "@mui/styles";
 import userIcon from "../../assets/users/user_icon.png";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
+import { useDispatch, useSelector } from "react-redux";
+import {
+  deleteUserModalWindow,
+  getDeleteUserModalStatus,
+} from "../../features/users.slice";
+import DeleteUserModalWindow from "./DeleteUserModalWindow";
+
+const useStyles = makeStyles({
+  card: {
+    borderRadius: "50px",
+  },
+  editIcon: {
+    cursor: "pointer",
+    float: "right",
+    marginRight: "20px",
+    marginLeft: "20px",
+  },
+  deleteIcon: {
+    cursor: "pointer",
+    float: "right",
+  },
+});
+
 export default function UserProfile() {
+  const classes = useStyles();
+  const dispatch = useDispatch();
+  const deleteUserModalWindowStatus = useSelector(getDeleteUserModalStatus);
+
+  const deleteProfile = () => {
+    dispatch(deleteUserModalWindow(true));
+  };
+
   return (
     <Grid container justifyContent={"center"} spacing={3}>
       <Grid item xs={12} md={4} lg={4} xl={3}>
-        <Card style={{ marginTop: "50px", borderRadius: "50px" }}>
+        <Card style={{ marginTop: "150px" }}>
           <CardActions>
             <span style={{ width: "100%" }}>
               <DeleteIcon
                 fontSize="medium"
-                style={{
-                  float: "right",
-                  marginRight: "20px",
-                  marginLeft: "20px",
-                }}
+                className={classes.deleteIcon}
+                onClick={deleteProfile}
               />
-              <EditIcon style={{ float: "right" }} fontSize="medium" />
+              <EditIcon className={classes.editIcon} fontSize="medium" />
             </span>
           </CardActions>
 
@@ -50,6 +72,7 @@ export default function UserProfile() {
           </Typography>
         </Card>
       </Grid>
+      <DeleteUserModalWindow open={deleteUserModalWindowStatus} />
     </Grid>
   );
 }

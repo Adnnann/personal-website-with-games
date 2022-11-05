@@ -18,6 +18,7 @@ const initialState = {
   },
   logInUserFormStatus: false,
   signUpFormStatus: false,
+  deleteUserModalWindow: false,
 };
 
 export const signUpUser = createAsyncThunk(
@@ -102,6 +103,9 @@ const usersSlice = createSlice({
     },
     setRememberedUserLoginStatus: (state, action) => {
       state.logInUser.isLogged = action.payload;
+    },
+    deleteUserModalWindow: (state, action) => {
+      state.deleteUserModalWindow = action.payload;
     },
   },
   extraReducers(builder) {
@@ -197,6 +201,8 @@ export const getSignUpUserStatus = (state) => state.users.registerUser;
 export const getLoginUserFormStatus = (state) =>
   state.users.logInUserFormStatus;
 export const getLogInUserStatus = (state) => state.users.logInUser;
+export const getDeleteUserModalStatus = (state) =>
+  state.users.deleteUserModalWindow;
 
 export const {
   setSignUpFormStatus,
@@ -204,5 +210,6 @@ export const {
   setRegisteredUserStatus,
   setLogInUserStatus,
   setRememberedUserLoginStatus,
+  deleteUserModalWindow,
 } = usersSlice.actions;
 export default usersSlice.reducer;
