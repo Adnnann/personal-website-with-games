@@ -36,9 +36,15 @@ export default function UserProfile() {
   };
 
   return (
-    <Grid container justifyContent={"center"} spacing={3}>
+    <Grid container justifyContent={"center"} spacing={3} style={{marginTop:'200px'}} 
+   
+>
       <Grid item xs={12} md={4} lg={4} xl={3}>
+<<<<<<< HEAD
         <Card style={{ marginTop: "150px" }}>
+=======
+        <Card style={{  borderRadius: "50px" }}>
+>>>>>>> 0967332fc525bc93880ebd8b8956684b91bf7db9
           <CardActions>
             <span style={{ width: "100%" }}>
               <DeleteIcon
